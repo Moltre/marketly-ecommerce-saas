@@ -1,0 +1,6 @@
+import 'dotenv/config'; import express from 'express'; import cors from 'cors'; import morgan from 'morgan'; import {connectDB} from './config/db.js'; import auth from './routes/auth.js'; import stores from './routes/stores.js'; import products from './routes/products.js'; import upload from './routes/upload.js'; import orders from './routes/orders.js'; import payments from './routes/payments.js'; import {webhook} from './controllers/payments.js'; import {errorHandler} from './middleware/error.js';
+const app=express();
+app.post('/api/payments/webhook',express.raw({type:'application/json'}),webhook);
+app.use(cors({origin:process.env.CLIENT_URL||'http://localhost:5173',credentials:true}));app.use(express.json({limit:'2mb'}));app.use(morgan('dev'));
+app.get('/api/health',(req,res)=>res.json({ok:true,service:'marketly-api'}));app.use('/api/auth',auth);app.use('/api/stores',stores);app.use('/api/products',products);app.use('/api/upload',upload);app.use('/api/orders',orders);app.use('/api/payments',payments);app.use(errorHandler);
+const port=process.env.PORT||5000;connectDB().then(()=>app.listen(port,()=>console.log(`Marketly API running on http://localhost:${port}`))).catch(err=>{console.error(err);process.exit(1)});

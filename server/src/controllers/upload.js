@@ -1,0 +1,2 @@
+import cloudinary from '../config/cloudinary.js';
+export async function uploadImage(req,res){if(!req.file)return res.status(400).json({message:'Image is required'});if(!process.env.CLOUDINARY_CLOUD_NAME)return res.status(503).json({message:'Cloudinary is not configured'});const result=await new Promise((resolve,reject)=>{const stream=cloudinary.uploader.upload_stream({folder:'marketly'},(err,data)=>err?reject(err):resolve(data));stream.end(req.file.buffer)});res.status(201).json({url:result.secure_url,publicId:result.public_id})}

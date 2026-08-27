@@ -1,0 +1,1 @@
+export default async function slugify(value,Model){let base=String(value).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')||'store';let slug=base,i=1;while(await Model.exists({slug}))slug=`${base}-${i++}`;return slug}
